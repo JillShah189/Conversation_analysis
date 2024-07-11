@@ -5,7 +5,7 @@ import streamlit as st
 import plotly.graph_objs as go
 
 # Load dataset
-with open('c:/Users/admin/Downloads/CoMTA_dataset.json') as f:
+with open('CoMTA_dataset.json') as f:
     dataset = json.load(f)
 
 def show_page3():
