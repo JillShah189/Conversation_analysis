@@ -5,6 +5,7 @@ import networkx as nx
 import igraph as ig
 import plotly.graph_objs as go
 from io import BytesIO  # Import BytesIO
+from pyvis.network import Network 
 
 # Load the dataset
 with open('CoMTA_dataset.json') as f:
@@ -52,25 +53,36 @@ def show_page1():
         G.add_edges(edges)
         G.es['weight'] = [edge_weights[edge] for edge in edges]
 
-        layout = G.layout("fr")
-        fig, ax = plt.subplots(figsize=(10, 8))
+        layout = G.layout("fr")  # Use Kamada-Kawai layout for curved edges
+        fig, ax = plt.subplots(figsize=(14, 10))
         visual_style = {
             "vertex_label": nodes,
             "edge_width": [G.es['weight'][i] for i in range(len(edges))],
             "vertex_color": 'skyblue',
-            "vertex_size": 50,
-            "vertex_label_size": 10,
-            "edge_arrow_size": 0.5,
+            "vertex_size": 100,
+            "vertex_label_size": 12,
+            "edge_arrow_size": 5,  # Make arrows larger to ensure visibility
             "layout": layout,
             "bbox": (800, 800),
             "margin": 40,
             "target": ax
         }
+        
         ig.plot(G, **visual_style)
+        
+        # Add edge labels on the lines with adjustments to avoid overlap
+        for edge in G.es:
+            source, target = edge.tuple
+            weight = edge['weight']
+            midpoint = [(layout[source][i] + layout[target][i]) / 2 for i in range(2)]
+            offset = 1  # Adjust the offset for better spacing
+            ax.text(midpoint[0], midpoint[1], str(weight), fontsize=10 + weight / 5, color='black', ha='center', va='center', backgroundcolor='white')
+
         buf = BytesIO()
         plt.savefig(buf, format="png")
         buf.seek(0)
         return buf
+
     '''
     for edge in edges:
             x0, y0 = layout[nodes.index(edge[0])]
@@ -154,14 +166,47 @@ def show_page1():
             yaxis=dict(showgrid=False, zeroline=False)
         )
         return fig
+    # Function to plot using pyvis for interactivity
+    def plot_pyvis(conversation):
+        G = nx.DiGraph()
+        previous_category = None
 
+        for message in conversation['data']:
+            current_category = message['category']
+            if current_category in selected_categories:
+                G.add_node(current_category)
+                if previous_category and previous_category in selected_categories:
+                    if G.has_edge(previous_category, current_category):
+                        G[previous_category][current_category]['weight'] += 1
+                    else:
+                        G.add_edge(previous_category, current_category, weight=1)
+                previous_category = current_category
+
+        net = Network(notebook=True, directed=True)
+        for node in G.nodes():
+            net.add_node(node, label=node, title=node, color='skyblue', size=30)
+
+        for edge in G.edges(data=True):
+            src, dst, data = edge
+            weight = data['weight']
+            net.add_edge(src, dst, value=weight, title=str(weight))
+
+        net.show_buttons(filter_=['physics'])
+        net.save_graph('network.html')
+        return 'network.html'
+    
     # Get the conversation for the selected test_id
     conversation = next(conv for conv in dataset if conv['test_id'] == selected_test_id)
 
     # Plot graphs
     st.subheader("igraph Visualization")
     st.image(plot_igraph(conversation))
+    st.write("The start node is User Queries and the end node is User Answer")
 
     st.subheader("networkx Visualization with Plotly Interactivity")
     fig = plot_networkx_plotly(conversation)
     st.plotly_chart(fig)
+
+    st.subheader("pyvis Interactive Visualization")
+    pyvis_html = plot_pyvis(conversation)
+    st.components.v1.html(open(pyvis_html, 'r').read(), height=600)
