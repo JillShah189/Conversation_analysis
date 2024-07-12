@@ -44,15 +44,16 @@ def show_page3():
         edge_values = list(edge_weights.values())
 
         trace = go.Bar(
-            x=edge_labels,
-            y=edge_values,
+            y=edge_labels,  # Reverse x and y axis assignments
+            x=edge_values,  # Reverse x and y axis assignments
+            orientation='h',  # Specify horizontal orientation
             marker=dict(color='blue')
         )
 
         layout = go.Layout(
             title=chart_title,
-            xaxis=dict(title='Edges'),
-            yaxis=dict(title='Weight'),
+            xaxis=dict(title='Weight'),  # Adjust x-axis label
+            yaxis=dict(title='Edges'),  # Adjust y-axis label
             margin=dict(l=40, r=40, t=40, b=140),
             hovermode='closest'
         )
@@ -78,3 +79,5 @@ def show_page3():
 
     st.subheader("Interactive Edge Weights Bar Chart for Answer Not Accepted")
     plot_interactive_bar_chart(edge_weights_not_accepted, 'Edge Weights Bar Chart for Answer Not Accepted')
+
+# Display the Streamlit app
