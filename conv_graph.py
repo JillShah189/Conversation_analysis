@@ -28,9 +28,11 @@ def show_page1():
     selected_categories = st.multiselect("Select Categories to Display", sorted(all_categories), default=sorted(all_categories))
 
     # Function to plot using igraph
+        # Add edge weight annotations
     def plot_igraph(conversation):
         nodes = []
         edges = []
+        node_freq = {}
         edge_weights = {}
 
         previous_category = None
@@ -39,6 +41,9 @@ def show_page1():
             current_category = message['category']
             if current_category not in nodes:
                 nodes.append(current_category)
+                node_freq[current_category] = 1
+            else:
+                node_freq[current_category] += 1
             if previous_category:
                 edge = (previous_category, current_category)
                 if edge in edge_weights:
@@ -55,11 +60,12 @@ def show_page1():
 
         layout = G.layout("fr")  # Use Kamada-Kawai layout for curved edges
         fig, ax = plt.subplots(figsize=(14, 10))
+        base_node_size = 75  # Set a base size for nodes
         visual_style = {
             "vertex_label": nodes,
             "edge_width": [G.es['weight'][i] for i in range(len(edges))],
             "vertex_color": 'skyblue',
-            "vertex_size": 100,
+            "vertex_size": [base_node_size + node_freq[node] * 10 for node in nodes],  # Base size plus frequency adjustment
             "vertex_label_size": 12,
             "edge_arrow_size": 5,  # Make arrows larger to ensure visibility
             "layout": layout,
@@ -82,17 +88,6 @@ def show_page1():
         plt.savefig(buf, format="png")
         buf.seek(0)
         return buf
-
-    '''
-    for edge in edges:
-            x0, y0 = layout[nodes.index(edge[0])]
-            x1, y1 = layout[nodes.index(edge[1])]
-            weight = edge_weights[edge]
-            ax.text((x0 + x1) / 2, (y0 + y1) / 2, str(weight), fontsize=10, ha='center', va='center', color='red')
-    '''
-        # Add edge weight annotations
-        
-        
 
     # Function to plot using networkx and Plotly for interactivity
     def plot_networkx_plotly(conversation):
