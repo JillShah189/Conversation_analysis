@@ -8,4 +8,3 @@ pandas
 seaborn
 nltk
 wordcloud
-nltk.corpus
