@@ -10,24 +10,8 @@ from collections import Counter
 import nltk
 import re
 import streamlit as st
-import logging
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-def download_nltk_data():
-    try:
-        nltk.data.find('corpora/stopwords.zip')
-        logger.info("NLTK stopwords data is already downloaded.")
-    except LookupError:
-        logger.info("NLTK stopwords data not found. Downloading...")
-        nltk.download('stopwords')
-        logger.info("NLTK stopwords data downloaded successfully.")
-
-download_nltk_data()
 # Download the stopwords from NLTK
-#nltk.download('stopwords')
+nltk.download('stopwords')
 
 # Define stopwords and additional unwanted words
 stop_words = set(stopwords.words('english'))
