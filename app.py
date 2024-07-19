@@ -6,7 +6,7 @@ from text_analysis import show_page4
 
 # Sidebar navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Individual Graphs", "Combined Graph", "Answer Accepted/Not Accpected"])
+page = st.sidebar.radio("Go to", ["Individual Graphs", "Combined Graph", "Answer Accepted/Not Accpected", "Text Analysis"])
 
 # Display the selected page
 if page == "Individual Graphs":
