@@ -4,3 +4,7 @@ networkx
 igraph
 plotly
 pyvis
+pandas
+seaborn
+nltk
+wordcloud
