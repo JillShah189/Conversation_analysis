@@ -8,5 +8,4 @@ pandas
 seaborn
 nltk
 wordcloud
-collections
 re
