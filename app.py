@@ -15,5 +15,5 @@ elif page == "Combined Graph":
     show_page2()
 elif page == "Answer Accepted/Not Accpected":
     show_page3()
-elif page == "Text Analysis":
-    show_page4()
+#elif page == "Text Analysis":
+    #show_page4()
